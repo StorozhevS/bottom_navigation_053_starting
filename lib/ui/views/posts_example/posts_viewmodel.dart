@@ -1,8 +1,10 @@
+import 'package:injectable/injectable.dart';
 import 'package:my_app/app/locator.dart';
 import 'package:my_app/datamodels/post.dart';
 import 'package:my_app/services/posts_service.dart';
 import 'package:stacked/stacked.dart';
 
+@lazySingleton
 class PostsViewModel extends FutureViewModel<List<Post>> {
   final _postsService = locator<PostsService>();
 

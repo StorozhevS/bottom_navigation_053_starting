@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_app/app/locator.dart';
 import 'package:stacked/stacked.dart';
 
 import 'posts_viewmodel.dart';
@@ -9,78 +10,86 @@ class PostsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<PostsViewModel>.reactive(
-      builder: (context, model, child) => Scaffold(
-        backgroundColor: Colors.grey[900],
-        body: model.isBusy
-            ? Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  children: <Widget>[
-                    CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation(Colors.purple[200]),
-                    ),
-                    Text(
-                      'Loading Posts',
-                      style: TextStyle(color: Colors.white),
-                    )
-                  ],
-                ),
-              )
-            : !model.hasError
-                ? ListView.separated(
-                    padding: const EdgeInsets.only(top: 55),
-                    separatorBuilder: (context, index) => const SizedBox(
-                          height: 20,
-                        ),
-                    itemCount: model.data.length,
-                    itemBuilder: (context, index) => Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 25),
-                          decoration: BoxDecoration(
-                              color: Colors.purple[100],
-                              borderRadius: BorderRadius.circular(5)),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 25, vertical: 20),
-                          alignment: Alignment.centerLeft,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            children: <Widget>[
-                              Expanded(
-                                child: Column(
-                                  children: <Widget>[
-                                    Text(
-                                      model.data[index].title,
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 20),
-                                    Text(
-                                      model.data[index].body,
-                                    )
-                                  ],
-                                ),
-                              ),
-                              SizedBox(
-                                child: Icon(
-                                  Icons.star,
-                                  color: Colors.purple[200],
-                                ),
-                              )
-                            ],
-                          ),
-                        ))
-                : Container(
-                    color: Colors.red,
-                    alignment: Alignment.center,
-                    child: Text(
-                      model.error.toString(),
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.white),
-                    ),
+      disposeViewModel: false,
+      // Get the viewmodel from the locator to get the singleton instance
+      viewModelBuilder: () => locator<PostsViewModel>(),
+      // Inidicate that we only want to initialise a specialty viewmodel once
+      initialiseSpecialViewModelsOnce: true,
+      builder: (context, model, child) =>
+          Scaffold(
+            backgroundColor: Colors.grey[900],
+            body: model.isBusy
+                ? Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: <Widget>[
+                  CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation(Colors.purple[200]),
                   ),
-      ),
-      viewModelBuilder: () => PostsViewModel(),
+                  Text(
+                    'Loading Posts',
+                    style: TextStyle(color: Colors.white),
+                  )
+                ],
+              ),
+            )
+                : !model.hasError
+                ? ListView.separated(
+                key: PageStorageKey('storage-key'),
+                padding: const EdgeInsets.only(top: 55),
+                separatorBuilder: (context, index) =>
+                const SizedBox(
+                  height: 20,
+                ),
+                itemCount: model.data.length,
+                itemBuilder: (context, index) =>
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 25),
+                      decoration: BoxDecoration(
+                          color: Colors.purple[100],
+                          borderRadius: BorderRadius.circular(5)),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 25, vertical: 20),
+                      alignment: Alignment.centerLeft,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: <Widget>[
+                          Expanded(
+                            child: Column(
+                              children: <Widget>[
+                                Text(
+                                  model.data[index].title,
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                Text(
+                                  model.data[index].body,
+                                )
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            child: Icon(
+                              Icons.star,
+                              color: Colors.purple[200],
+                            ),
+                          )
+                        ],
+                      ),
+                    ))
+                : Container(
+              color: Colors.red,
+              alignment: Alignment.center,
+              child: Text(
+                model.error.toString(),
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ),
     );
   }
 }
