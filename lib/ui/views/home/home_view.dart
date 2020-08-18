@@ -31,7 +31,7 @@ class HomeView extends StatelessWidget {
                 ],
               ),
               body: PageTransitionSwitcher(
-                //1
+                //1 //2
                 duration: const Duration(milliseconds: 300),
                 reverse: model.reverse,
                 transitionBuilder: (
